@@ -85,3 +85,21 @@ async fn register_user_handler(
         }
     }
 }
+
+#[get("/healthchecker")]
+async fn health_checker_handler() -> impl Responder {
+    const MESSAGE: &str = "JWT Authentication in Rust using Actix-web, Postgres, and SQLX";
+
+    HttpResponse::Ok().json(json!({"status": "success", "message": MESSAGE}))
+}
+
+pub fn config(conf: &mut web::ServiceConfig) {
+  let scope = web::scope("/api")
+      .service(health_checker_handler)
+      .service(register_user_handler)
+      .service(login_user_handler)
+      .service(logout_handler)
+      .service(get_me_handler);
+
+  conf.service(scope);
+}
